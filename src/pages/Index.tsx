@@ -14,9 +14,10 @@ export default function Index() {
   const startRecording = async () => {
     recordedChunksRef.current = [];
     try {
-      const displayMediaOptions = {
+      // Fix the DisplayMediaStreamOptions type
+      const displayMediaOptions: DisplayMediaStreamOptions = {
         video: {
-          cursor: "always"
+          cursor: "always" as const
         },
         audio: false
       };
