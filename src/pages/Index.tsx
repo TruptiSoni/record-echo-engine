@@ -14,10 +14,12 @@ export default function Index() {
   const startRecording = async () => {
     recordedChunksRef.current = [];
     try {
-      // Fix the DisplayMediaStreamOptions type
-      const displayMediaOptions: DisplayMediaStreamOptions = {
+      // Use correct type definition for DisplayMediaStreamOptions
+      const displayMediaOptions = {
         video: {
-          cursor: "always" as const
+          // The cursor property is a non-standard option supported by Chrome
+          // Use type assertion to avoid TypeScript errors
+          cursor: "always" as any
         },
         audio: false
       };
