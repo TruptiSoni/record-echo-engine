@@ -1,9 +1,9 @@
 
 {
   "name": "Simple Screen Recorder",
-  "version": "1.0",
+  "version": "1.0.0",
   "manifest_version": 3,
-  "description": "Record your screen with audio",
+  "description": "Record your screen with optional audio using a simple, user-friendly interface",
   "action": {
     "default_popup": "index.html",
     "default_icon": {
@@ -25,5 +25,11 @@
   ],
   "host_permissions": [
     "<all_urls>"
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }
