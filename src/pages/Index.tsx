@@ -16,27 +16,28 @@ export default function Index() {
     recordedChunksRef.current = [];
     setRecordedVideoUrl(null);
     try {
-      // Use correct type definition for DisplayMediaStreamOptions
-      const displayMediaOptions = {
+      // Create proper type-safe options for Chrome's implementation
+      const displayMediaOptions: DisplayMediaStreamOptions = {
+        video: true, // Start with standard video constraints
+        audio: false
+      };
+      
+      // Chrome-specific cursor option needs to be added this way to avoid TypeScript errors
+      const chromeMediaOptions = {
         video: {
-          // The cursor property is a non-standard option supported by Chrome
-          // Use type assertion to avoid TypeScript errors
-          cursor: "always" as any
+          cursor: "always"
         },
         audio: false
       };
       
-      const audioOptions = {
-        audio: true
-      };
-      
-      const screenStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+      // Use Chrome-specific options but with type assertion
+      const screenStream = await navigator.mediaDevices.getDisplayMedia(chromeMediaOptions as DisplayMediaStreamOptions);
       
       let combinedStream = screenStream;
       
       // Add audio track if microphone is enabled
       if (isMicEnabled) {
-        const audioStream = await navigator.mediaDevices.getUserMedia(audioOptions);
+        const audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioTracks = audioStream.getAudioTracks();
         audioTracks.forEach(track => {
           screenStream.addTrack(track);
@@ -195,4 +196,3 @@ export default function Index() {
     </div>
   );
 }
-
