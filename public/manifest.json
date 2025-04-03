@@ -1,0 +1,26 @@
+
+{
+  "name": "Simple Screen Recorder",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "Record your screen with audio",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "downloads"
+  ]
+}
