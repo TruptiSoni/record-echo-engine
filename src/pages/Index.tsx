@@ -2,17 +2,19 @@
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Mic, MicOff, Video, VideoOff } from 'lucide-react';
+import { Mic, MicOff, Video, VideoOff, Download } from 'lucide-react';
 
 export default function Index() {
   const [isRecording, setIsRecording] = useState(false);
   const [isMicEnabled, setIsMicEnabled] = useState(true);
+  const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const { toast } = useToast();
 
   const startRecording = async () => {
     recordedChunksRef.current = [];
+    setRecordedVideoUrl(null);
     try {
       // Use correct type definition for DisplayMediaStreamOptions
       const displayMediaOptions = {
@@ -53,27 +55,14 @@ export default function Index() {
       mediaRecorder.onstop = () => {
         const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' });
         const url = URL.createObjectURL(blob);
-        
-        // Create download link
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `screen-recording-${new Date().toISOString()}.webm`;
-        document.body.appendChild(a);
-        a.click();
-        
-        // Clean up
-        setTimeout(() => {
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-        }, 100);
+        setRecordedVideoUrl(url);
         
         // Stop all tracks
         screenStream.getTracks().forEach(track => track.stop());
         
         toast({
           title: "Recording saved",
-          description: "Your screen recording has been saved to your downloads."
+          description: "Your screen recording is ready to download."
         });
       };
       
@@ -103,6 +92,29 @@ export default function Index() {
     }
   };
   
+  const downloadRecording = () => {
+    if (recordedVideoUrl) {
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = recordedVideoUrl;
+      a.download = `screen-recording-${new Date().toISOString()}.webm`;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(recordedVideoUrl);
+        setRecordedVideoUrl(null);
+      }, 100);
+      
+      toast({
+        title: "Download started",
+        description: "Your screen recording is downloading."
+      });
+    }
+  };
+  
   const toggleMic = () => {
     setIsMicEnabled(!isMicEnabled);
   };
@@ -116,7 +128,9 @@ export default function Index() {
           <p className="text-sm text-gray-500">
             {isRecording 
               ? "Recording in progress..." 
-              : "Click the button below to start recording your screen with audio."}
+              : recordedVideoUrl
+                ? "Recording complete. Download or start a new recording."
+                : "Click the button below to start recording your screen with audio."}
           </p>
         </div>
         
@@ -130,6 +144,23 @@ export default function Index() {
               <VideoOff className="w-4 h-4 mr-2" />
               Stop Recording
             </Button>
+          ) : recordedVideoUrl ? (
+            <>
+              <Button 
+                onClick={downloadRecording}
+                className="px-6"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Recording
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => setRecordedVideoUrl(null)}
+                className="px-6"
+              >
+                Start New
+              </Button>
+            </>
           ) : (
             <Button 
               onClick={startRecording}
@@ -164,3 +195,4 @@ export default function Index() {
     </div>
   );
 }
+
