@@ -1,29 +1,30 @@
 
-// Simple script to generate icons for the Chrome extension
+// Script to generate placeholder icon files without requiring canvas
 const fs = require('fs');
-const { createCanvas } = require('canvas');
+const path = require('path');
 
-function generateIcon(size) {
-  const canvas = createCanvas(size, size);
-  const ctx = canvas.getContext('2d');
-  
-  // Purple background
-  ctx.fillStyle = '#8B5CF6';
-  ctx.fillRect(0, 0, size, size);
-  
-  // Red recording dot
-  ctx.fillStyle = '#EF4444';
-  ctx.beginPath();
-  ctx.arc(size/2, size/2, size/3, 0, Math.PI * 2);
-  ctx.fill();
-  
-  // Save to file
-  const buffer = canvas.toBuffer('image/png');
-  fs.writeFileSync(`public/icon${size}.png`, buffer);
-  console.log(`Created icon${size}.png`);
+function generateIconFile(size, outputPath) {
+  // Create a simple SVG instead of using canvas
+  const svg = `
+<svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+  <rect width="${size}" height="${size}" fill="#8B5CF6" />
+  <circle cx="${size/2}" cy="${size/2}" r="${size/3}" fill="#EF4444" />
+</svg>`;
+
+  // Ensure directory exists
+  const dir = path.dirname(outputPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  // Write SVG to file
+  fs.writeFileSync(outputPath, svg);
+  console.log(`Created ${outputPath}`);
 }
 
 // Generate icons in required sizes
 console.log('Generating extension icons...');
-[16, 48, 128].forEach(size => generateIcon(size));
+[16, 48, 128].forEach(size => {
+  generateIconFile(size, `public/icon${size}.svg`);
+});
 console.log('Icons generated successfully!');

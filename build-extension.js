@@ -16,16 +16,17 @@ try {
   let iconsAvailable = true;
   
   iconSizes.forEach(size => {
-    const iconPath = path.join(__dirname, 'public', `icon${size}.png`);
+    const iconPath = path.join(__dirname, 'public', `icon${size}.svg`);
     if (!fs.existsSync(iconPath)) {
-      console.warn(`Warning: icon${size}.png not found in the public directory.`);
+      console.warn(`Warning: icon${size}.svg not found in the public directory.`);
       iconsAvailable = false;
     }
   });
   
   if (!iconsAvailable) {
-    console.log('Some icon files are missing. You should create them before publishing the extension.');
-    console.log('You can use the generateIcons function in src/assets/createIcons.ts to create placeholder icons.');
+    console.log('Some icon files are missing. Generating them now...');
+    // Run the icon generation script
+    require('./src/generateIcons.js');
   }
   
   console.log('\nThe extension is ready for distribution!');

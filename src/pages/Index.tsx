@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -32,9 +31,7 @@ export default function Index() {
     try {
       // Create proper type-safe options for Chrome's implementation
       const displayMediaOptions: DisplayMediaStreamOptions = {
-        video: {
-          cursor: "always" as any
-        },
+        video: true,
         audio: false
       };
       
